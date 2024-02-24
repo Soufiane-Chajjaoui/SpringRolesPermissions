@@ -1,6 +1,6 @@
-package est.projet.springrolespermission.repos;
+package est.projet.springroles.repos;
 
-import est.projet.springrolespermission.models.User;
+import est.projet.springroles.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

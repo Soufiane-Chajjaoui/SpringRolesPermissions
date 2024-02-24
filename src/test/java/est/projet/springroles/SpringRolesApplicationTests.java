@@ -1,10 +1,10 @@
-package est.projet.springrolespermission;
+package est.projet.springroles;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringRolesPermissionApplicationTests {
+class SpringRolesApplicationTests {
 
 	@Test
 	void contextLoads() {

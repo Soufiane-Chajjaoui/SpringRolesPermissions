@@ -1,4 +1,4 @@
-package est.projet.springrolespermission.models;
+package est.projet.springroles.models;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

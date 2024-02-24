@@ -1,4 +1,4 @@
-package est.projet.springrolespermission.models;
+package est.projet.springroles.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "_user")
 @Builder
 public class User implements UserDetails {
     @Id
@@ -30,12 +31,12 @@ public class User implements UserDetails {
     private List<Token> tokens;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getUsername() {
-        return password;
+        return this.email;
     }
 
     @Override
