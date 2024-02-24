@@ -1,4 +1,4 @@
-package est.projet.springrolespermission.models;
+package est.projet.springroles.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class Token {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String token;
     @Enumerated(EnumType.STRING)
