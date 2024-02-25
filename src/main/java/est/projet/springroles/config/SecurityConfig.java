@@ -1,10 +1,12 @@
 package est.projet.springroles.config;
 
+import est.projet.springroles.models.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
 
@@ -28,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers("/api/v1/auth/register","/api/v1/auth/authenticate")
                                 .permitAll()
+                                .requestMatchers("/api/v1/demo-controller").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
