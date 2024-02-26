@@ -7,11 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
 public class demoController {
-    @GetMapping("/demo-controller")
-//    @PreAuthorize("hasAuthority('ADMIN_ROLES')")
-    public ResponseEntity<String> sayHello(){
-        return ResponseEntity.ok("Hello from Secured endpoint");
+    @GetMapping("/demo")
+    public ResponseEntity<String> demo() {
+        return ResponseEntity.ok("Hello from secured url");
+    }
+
+    @GetMapping("/admin_only")
+    public ResponseEntity<String> adminOnly() {
+        return ResponseEntity.ok("Hello from admin only url");
     }
 }

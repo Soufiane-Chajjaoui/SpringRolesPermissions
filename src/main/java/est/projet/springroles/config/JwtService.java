@@ -32,11 +32,11 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
     private Claims extractAllClaims(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
     public String generateToken(UserDetails userDetails){
         return generateToken(new HashMap<>() , userDetails);
@@ -58,10 +58,10 @@ public class JwtService {
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         long expirationTimeMillis = System.currentTimeMillis() + 1000 * 60 * 24;
         System.out.println("Expiration Time: " + new Date(expirationTimeMillis));
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(expirationTimeMillis))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(expirationTimeMillis))
+                .signWith(getSignInKey()).compact();
     }
 
     public SecretKey getSignInKey(){

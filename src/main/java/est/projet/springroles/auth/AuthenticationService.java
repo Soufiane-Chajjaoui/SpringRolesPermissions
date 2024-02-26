@@ -2,6 +2,8 @@ package est.projet.springroles.auth;
 
 import est.projet.springroles.config.JwtService;
 import est.projet.springroles.models.Role;
+import est.projet.springroles.models.Token;
+import est.projet.springroles.models.TokenType;
 import est.projet.springroles.models.User;
 import est.projet.springroles.repos.TokenRepo;
 import est.projet.springroles.repos.UserRepo;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepo userRepo;
+    private final TokenRepo tokenRepo ;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -24,14 +27,27 @@ public class AuthenticationService {
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role(Role.USER)
+                .role(registerRequest.getRole())
                 .build();
         var savedUser = userRepo.save(user);
         var jwtToken = jwtService.generateToken(user);
+        savedUserToken(jwtToken, savedUser);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .build();
     }
+
+    private void savedUserToken(String jwtToken, User savedUser) {
+        var token = Token.builder()
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .user(savedUser)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepo.save(token);
+    }
+
     public AuthenticationResponse authenticate(AuthenticationRequest registerRequest){
         System.out.println(registerRequest.getEmail() + "*" + registerRequest.getPassword() );
         authenticationManager.authenticate(
@@ -42,6 +58,7 @@ public class AuthenticationService {
         );
         var user = userRepo.findByEmail(registerRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
         var jwtToken = jwtService.generateToken(user);
+        savedUserToken(jwtToken , user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .build();

@@ -3,7 +3,7 @@ package est.projet.springroles.controllers;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/manager")
+@RequestMapping("/api/v1/management")
 public class ManagerController {
 
     @GetMapping
