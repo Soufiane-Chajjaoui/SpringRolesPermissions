@@ -1,5 +1,6 @@
 package est.projet.springroles.config;
 
+import est.projet.springroles.repos.TokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationService extends OncePerRequestFilter {
     private final JwtService jwtService;
+    private final TokenRepo tokenRepo ;
     private final UserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(
@@ -36,7 +38,10 @@ public class JwtAuthenticationService extends OncePerRequestFilter {
         userEmail = jwtService.extractUsername(jwt) ;
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-           if (jwtService.isTokenValid(jwt , userDetails)){
+
+           var isTokenValid = tokenRepo.findByToken(jwt).map(t->!t.isExpired() && !t.isRevoked()).orElse(false);
+
+           if (jwtService.isTokenValid(jwt , userDetails) && isTokenValid){
                UsernamePasswordAuthenticationToken authenticationToken =
                        new UsernamePasswordAuthenticationToken(
                                userDetails , null ,userDetails.getAuthorities()

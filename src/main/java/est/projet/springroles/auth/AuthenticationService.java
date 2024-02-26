@@ -37,16 +37,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void savedUserToken(String jwtToken, User savedUser) {
-        var token = Token.builder()
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .user(savedUser)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepo.save(token);
-    }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest registerRequest){
         System.out.println(registerRequest.getEmail() + "*" + registerRequest.getPassword() );
@@ -58,9 +49,34 @@ public class AuthenticationService {
         );
         var user = userRepo.findByEmail(registerRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
         var jwtToken = jwtService.generateToken(user);
+        revokeAllUserTokens(user);
         savedUserToken(jwtToken , user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .build();
+    }
+
+    private void savedUserToken(String jwtToken, User savedUser) {
+        var token = Token.builder()
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .user(savedUser)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepo.save(token);
+    }
+    private void revokeAllUserTokens(User user){
+        var validUserToken = tokenRepo.findAllValidTokenByUser(user.getId());
+
+        if (validUserToken.isEmpty()){
+            return;
+        }
+        validUserToken.forEach(t->{
+            t.setRevoked(true);
+            t.setExpired(true);
+        });
+        tokenRepo.saveAll(validUserToken);
+
     }
 }
